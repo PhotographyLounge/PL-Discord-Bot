@@ -32,7 +32,7 @@ function copyimage(reaction, user, client) {
     	// Copy
     	channel = client.channels.cache.get(config.feedback);
         reaction.message.attachments.forEach(Attachment => {GerneralFunctions.ImageEmbed(channel, Attachment.url, "Image by: <@" + reaction.message.author.id.toString() +">");})
-    	channel.send("<@" + reaction.message.author.id + "> wants to give his opinions about your photo <@" + user.id + ">.")
+    	channel.send("<@" + user.id + "> wants to give his opinions about your photo <@" + reaction.message.author.id + ">.")
     }
 }
 
