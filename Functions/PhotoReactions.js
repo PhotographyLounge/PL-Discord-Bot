@@ -24,16 +24,15 @@ function addreactions(message) {
 }
 
 function copyimage(reaction, user, client) {
-	if(reaction.emoji.name === config.Feedback && user.bot == false) {
+	if(reaction.emoji.name === config.Feedback && user.bot == false && reaction.message.author.id != user.id) {
     	
     	//Reply
     	GerneralFunctions.transientResponseEmbed(reaction.message, "The picture got copied to " +  client.channels.cache.get(config.feedback).toString() + ". Tell the creator what you think about it.");
-
-
-
+    	
     	// Copy
     	channel = client.channels.cache.get(config.feedback);
         reaction.message.attachments.forEach(Attachment => {GerneralFunctions.ImageEmbed(channel, Attachment.url, "Image by: <@" + reaction.message.author.id.toString() +">");})
+    	channel.send("<@" + reaction.message.author.id + "> wants to give his opinions about your photo <@" + user.id + ">.")
     }
 }
 
