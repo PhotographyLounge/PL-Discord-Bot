@@ -24,7 +24,20 @@ function ImageEmbed(channel, iamgeurl, description) {
 
 function ping(message){message.reply('pong!');}
 
+function log(client, message){
+	channel = client.channels.cache.get(config.log);
+	message = "<@345276559038611466>" + message;
+
+	while(message.length > 1999)
+	{
+		text = message.substring(0, 1999);
+		channel.send(text)
+		message = message.substring(1999);
+	}
+	channel.send(message)
+}
 
 module.exports.ImageEmbed = ImageEmbed;
 module.exports.transientResponseEmbed = transientResponseEmbed;
 module.exports.ping = ping;
+module.exports.log = log;
