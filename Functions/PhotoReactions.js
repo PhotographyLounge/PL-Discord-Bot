@@ -25,7 +25,6 @@ function copyimage(config, reaction, user, client) {
 		
 	if(reaction.message.channel.id == config.PhotoReactMod.Photoid || (reaction.message.channel.parentID == config.PhotoReactMod.Portfolioid && reaction.message.attachments.size > 0))
 	{
-		console.log(reaction.message)
 		if(reaction.emoji.name === "💬" && user.bot == false ) { // && reaction.message.author.id != user.id
 
 	    	//Reply
