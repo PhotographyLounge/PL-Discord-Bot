@@ -1,4 +1,7 @@
 const Discord = require('discord.js');
+var net = require('net');
+
+
 
 function RoleHelpPage(config, message) {
 	var helpEmbed = new Discord.MessageEmbed()
@@ -23,7 +26,9 @@ function HelpPage(config, message) {
 		.addFields(
 			{name:'**__Get Role:__**',value: "```md\n" + config.General.Prefix + " getrole <category>```\n"},
 		)
-	message.channel.send(helpEmbed).then(msg => {msg.delete({timeout:30 * 1000})});;
+	message.channel.send(helpEmbed).then(msg => {msg.delete({timeout:30 * 1000})});
+
+	LogToSIEM({"Module":"GeneralFunctions", "Function":"HelpPage", "Username":message.author.username})
 	return;
 }
 
@@ -61,7 +66,10 @@ function ImageEmbed(config, channel, iamgeurl, description) {
 	return 
 }
 
-function Ping(message){message.reply('pong!');}
+function Ping(message){
+	message.reply('pong!');
+	LogToSIEM({"Module":"GeneralFunctions", "Function":"Ping", "Username":message.author.username})
+}
 
 function Log(config, client, message){
 	channel = client.guilds.cache.get(config.Logging.Server).channels.cache.get(config.Logging.Channel)
@@ -77,6 +85,19 @@ function Log(config, client, message){
 	channel.send(message)
 }
 
+function LogToSIEM(message)
+{
+	var sock = new net.Socket();
+	sock.connect(5000, '192.168.0.210', function() {	 
+		sock.write(JSON.stringify(message));
+		sock.end();			
+	});
+	sock.on('error', function() {
+		console.log('Socket error!');
+	});			
+}
+
+
 module.exports.ImageEmbed = ImageEmbed;
 module.exports.HelpPage = HelpPage;
 module.exports.RoleHelpPage = RoleHelpPage;
@@ -84,4 +105,4 @@ module.exports.RoleEmbed = RoleEmbed;
 module.exports.transientResponseEmbed = transientResponseEmbed;
 module.exports.Ping = Ping;
 module.exports.Log = Log;
-
+module.exports.LogToSIEM = LogToSIEM;

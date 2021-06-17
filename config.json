@@ -1,25 +1,42 @@
 {
 	"General":{
-		"Prefix":"pl!",
-		"Name":"PL-Bot",
-		"Thumbnail":"https://i.imgur.com/IV48bC6.gif",
-		"EmbedColour":"#FEFEFE"
+		"Prefix"     :"pl!",
+		"Name"       :"PL-Bot",
+		"Thumbnail"  :"https://i.imgur.com/IV48bC6.gif",
+		"EmbedColour":"#FEFEFE",
+		"ModRole"    :"728914863480504342",
+		"OwnerRole"  :"728914549138260000",
+		"HelperRole" :"734057868608929794"
 	},
 	"PhotoReactMod":{
-		"Photoid":"728907013257691176",
+		"Photoid"    :"728907013257691176",
 		"Portfolioid":"730785052912386089",
-		"Feedbackid":"741347957516796054",
-		"Thubmbsup": "👍",
-		"Thubmbsdown": "👎",
-		"Feedback":"💬",
-		"Multattch":false,
-		"Text":false,
-		"Timeout":10
+		"Feedbackid" :"741347957516796054",
+		"Thubmbsup"  :"731953350509199461",
+		"Thubmbsdown":"731953672648523929",
+		"Feedback"   :"💬",
+		"Multattch"  :false,
+		"Text"       :false,
+		"Timeout"    :10
 	},
 	"Logging":{
-		"Server":"709753416938946580",
-		"Channel":"793452265234235402",
-		"Mod":"345276559038611466"
+		"Server"    :"709753416938946580",
+		"Channel"   :"793452265234235402",
+		"Mod"       :"345276559038611466"
+	},
+	"Contest":{
+		"Channel"   :"732542623549751354",
+		"Guild"     :"728905379274162177",
+		"Emoji"     :"731953350509199461",
+		"HelpRole"  :"819293046289072180",
+		"OwnRole"   :"728914549138260000",
+		"EverRole"  :"728905379274162177",
+		"stRole"    :"737713148508897401",
+		"ndRole"    :"737713379057205290",
+		"rdRole"    :"737713780485652480",
+		"JPRole"    :"825346811224784906",
+		"SubFile"   :"SaveFiles/Submissions.json",
+		"WinFile"   :"SaveFiles/Winners.txt"
 	},
 	"ReactMod":{
 		"Categories":{

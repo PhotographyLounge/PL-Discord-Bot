@@ -34,6 +34,7 @@ function RoleMenu(config, message, args){
 }
 
 function GetRole(config, client, reaction, user){
+
 	if(user.bot == false)
 	{
 		var Needle = reaction.message.embeds[0].description.split(" ")[1].toLowerCase()
@@ -47,11 +48,13 @@ function GetRole(config, client, reaction, user){
 				{
 					member.roles.remove(config.ReactMod.Categories[Needle][key].RoleId)
 					channel.send('Removed role ' + key + ' from ' + member.displayName).then(msg => {msg.delete({timeout:5000})});
+					GerneralFunctions.LogToSIEM({"Module":"RoleReactions", "Function":"Remove Role", "Username":user.username, "Content":config.ReactMod.Categories[Needle][key].ReactEmoji})
 				}
 				else
 				{
 					member.roles.add(config.ReactMod.Categories[Needle][key].RoleId)
 					channel.send('Added role ' + key + ' to ' + member.displayName).then(msg => {msg.delete({timeout:5000})});
+					GerneralFunctions.LogToSIEM({"Module":"RoleReactions", "Function":"Add Role", "Username":user.username, "Content":config.ReactMod.Categories[Needle][key].ReactEmoji})
 				}
 			}
 		}		
