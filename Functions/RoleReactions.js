@@ -1,12 +1,6 @@
 const Discord = require('discord.js');
 const GerneralFunctions = require('./GeneralFunctions.js');
 
-//const config = require('./../config.json');
-//const config = require('./../testconfig.json');
-
-
-
-
 function RoleMenu(config, message, args){	
 	if(args.length == 3)
 	{
@@ -35,26 +29,25 @@ function RoleMenu(config, message, args){
 
 function GetRole(config, client, reaction, user){
 
-	if(user.bot == false)
+	if(user.bot == false && reaction.message.embeds[0] != undefined && reaction.message.author.bot == false)
 	{
 		var Needle = reaction.message.embeds[0].description.split(" ")[1].toLowerCase()
 		for (key in config.ReactMod.Categories[Needle]) {
 			if(config.ReactMod.Categories[Needle][key].ReactEmoji == reaction._emoji.name)
 			{
-				
-				let member   = reaction.message.guild.member(user)
+				console.log(user)
+				let member   = reaction.message.guild.members.cache.get(user.id)
 				let channel  = client.channels.cache.get(reaction.message.channel.id)
+
 				if(member.roles.cache.has(config.ReactMod.Categories[Needle][key].RoleId))
 				{
 					member.roles.remove(config.ReactMod.Categories[Needle][key].RoleId)
-					channel.send('Removed role ' + key + ' from ' + member.displayName).then(msg => {msg.delete({timeout:5000})});
-					GerneralFunctions.LogToSIEM({"Module":"RoleReactions", "Function":"Remove Role", "Username":user.username, "Content":config.ReactMod.Categories[Needle][key].ReactEmoji})
+					channel.send('Removed role ' + key + ' from ' + member.displayName).then(msg => {setTimeout(() => msg.delete(), 5000)});
 				}
 				else
 				{
 					member.roles.add(config.ReactMod.Categories[Needle][key].RoleId)
-					channel.send('Added role ' + key + ' to ' + member.displayName).then(msg => {msg.delete({timeout:5000})});
-					GerneralFunctions.LogToSIEM({"Module":"RoleReactions", "Function":"Add Role", "Username":user.username, "Content":config.ReactMod.Categories[Needle][key].ReactEmoji})
+					channel.send('Added role ' + key + ' to ' + member.displayName).then(msg => {setTimeout(() => msg.delete(), 5000)});
 				}
 			}
 		}		

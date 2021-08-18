@@ -4,9 +4,6 @@ const fs = require('fs');
 // Main Token & Config
 const Token = require('./../tokens/PL.json');
 const config = require('./config.json');
-// Test Token
-//const Token = require('./../tokens/Test.json');
-//const config = require('./testconfig.json');
 
 
 
@@ -18,15 +15,13 @@ const Contest           = require('./Functions/ContestHelper.js');
 
 //Client Startup
 try{
-	const client = new Discord.Client();
+	const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ] });
 	client.login(Token['Token']);
 
 	client.on('ready', message => {
 		try{
 		    GerneralFunctions.Log(config, client, "Server Restart")
 		    Contest.LoadSubmissions(client, config)
-			GerneralFunctions.LogToSIEM({"Event":"Sever Restart"})
-
 
 		}
 		catch(err) {
@@ -35,11 +30,22 @@ try{
 		}
 	});
 
-	client.on('message', message => {
+	client.on('messageCreate', message => {
 		if(message.author.bot == true){return}
+
 
 		if      (message.channel.id == config.PhotoReactMod.Photoid){PhotoReactions.addreactions(config, message);}
 		else if (message.channel.id == config.Contest.Channel      ){Contest.AddSub(client, message, config);}
+
+		if(message.content.startsWith("!poll"))
+		{
+			if(message.content.length > 6)
+			{
+				let msg = message.content.substring(6);
+				message.delete();
+				GerneralFunctions.PollEmbed(config, message.channel, message.author.displayAvatarURL(), message.author.username, msg);
+			}	
+		}
 		
 		if(message.content.includes(config.General.Prefix) && message.content.includes(" "))
 		{
@@ -57,8 +63,6 @@ try{
 					member.roles.add("736165001999679499")
 				}
 			}
-
-
 
 			let args = message.content.split(" ");
 			if(args.length > 1 && args[1] != " " && args[1] != "")
@@ -99,21 +103,22 @@ try{
 	});
 
 	client.on('messageReactionAdd', (reaction, user) => {
-		if(reaction.message.author.id == user.id && reaction.message.channel.id == config.Contest.Channel)
+
+		if(user.bot == true){return}
+		
+
+		if(reaction.message.channel.id == config.Contest.Channel)
 		{
-			reaction.users.remove(user.id);
+			if(reaction.message.author.id == user.id){reaction.users.remove(user.id);}
+		}
+		else if(reaction.message.channel.id == config.PhotoReactMod.Photoid)
+		{
+			if(reaction.message.author.id != user.id){PhotoReactions.copyimage(config, reaction, user, client);}
 		}
 		else
 		{
-			if(reaction.message.author.bot == false){
-				PhotoReactions.copyimage(config, reaction, user, client);
-			} 
-			if(reaction.message.author.username == config.General.Name) 
-			{
-				RoleReactions.GetRole(config, client, reaction, user) // Fail Reacton to oher bot
-			}
+			RoleReactions.GetRole(config, client, reaction, user)
 		}
-
 	});
 
 	client.on("messageDelete", function(message){

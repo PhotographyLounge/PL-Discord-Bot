@@ -1,8 +1,9 @@
 {
 	"General":{
 		"Prefix"     :"pl!",
-		"Name"       :"PL-Bot",
-		"Thumbnail"  :"https://i.imgur.com/IV48bC6.gif",
+		"Name"       :"Test PL-Bot",
+		"Id"		 :"791254250008870942",
+		"Thumbnail"  :"https://cdn.discordapp.com/attachments/753152818382372955/874596061296074752/image0.png",
 		"EmbedColour":"#FEFEFE",
 		"ModRole"    :"728914863480504342",
 		"OwnerRole"  :"728914549138260000",
@@ -17,7 +18,7 @@
 		"Feedback"   :"💬",
 		"Multattch"  :false,
 		"Text"       :false,
-		"Timeout"    :10
+		"Timeout"    :5000
 	},
 	"Logging":{
 		"Server"    :"709753416938946580",
@@ -30,7 +31,7 @@
 		"Emoji"     :"731953350509199461",
 		"HelpRole"  :"819293046289072180",
 		"OwnRole"   :"728914549138260000",
-		"EverRole"  :"728905379274162177",
+		"MemberRole":"728914699424628878",
 		"stRole"    :"737713148508897401",
 		"ndRole"    :"737713379057205290",
 		"rdRole"    :"737713780485652480",

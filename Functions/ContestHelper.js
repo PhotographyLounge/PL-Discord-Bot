@@ -29,7 +29,6 @@ async function Helper(client, message, config)
 			//message.delete()
 		}
 
-		GerneralFunctions.LogToSIEM({"Module":"Contesthelper", "Function":"Administrative  Commands", "Username":message.author.username, "Content":message.content})
 	}
 }
 
@@ -40,13 +39,12 @@ async function SubStart(client, message, config)
 	const channel   = guild .channels.cache.get(config.Contest.Channel)
 
 	const roles     = message.guild.roles;
-    const everybody = roles.cache.find(r => r.id === config.Contest.EverRole);
-	
-    var start = null
+	const member 	= message.guild.roles.cache.get(config.Contest.MemberRole);
 
-	await channel.overwritePermissions([{id:everybody, allow:['SEND_MESSAGES'],},], 'Submission Phase')
-	await channel.send("----- SUBMISSIONS BELOW ------").then(msg => {start = msg.id})
-	await fs.writeFile(config.Contest.SubFile, '{"subs":{},"start":"'+ start + '"}\n', (err) => {if (err) throw err;})
+    var start = null
+	await channel.permissionOverwrites.edit(member,  { SEND_MESSAGES: true });
+	await channel.send("----- SUBMISSIONS BELOW ------").then(msg => {start = msg.id});
+	await fs.writeFile(config.Contest.SubFile, '{"subs":{},"start":"'+ start + '"}\n', (err) => {if (err) throw err;});
 }
 
 async function AddSub(client, message, config)
@@ -70,22 +68,21 @@ async function AddSub(client, message, config)
 		}
 		else
 		{
-			message.channel.send("You have already entered a Submission. Please remove your submission before you enter a new one.").then(msg => {msg.delete({timeout:5000})});
+			message.channel.send("You have already entered a Submission. Please remove your submission before you enter a new one.").then(msg => {setTimeout(() => msg.delete(), 5000)});		
 			message.delete();
 		}
 	}
 	else if (message.attachments.size > 1)
 	{
-		message.delete();
-		id = message.reply("Sending multiple attachments is prohibited").then(msg => {msg.delete({timeout:5000})});				
+		await message.reply("Sending multiple attachments is prohibited").then(msg => {setTimeout(() => msg.delete(), 5000)});		
+		message.delete();		
 	}
 	else if (message.attachments.size < 1)
 	{
-		message.delete();
-		id = message.reply("Sending text in this chat is prohibited").then(msg => {msg.delete({timeout:5000})});				
+		
+		await message.reply("Sending text in this chat is prohibited").then(msg => {setTimeout(() => msg.delete(), 5000)});
+		message.delete();			
 	}
-
-	GerneralFunctions.LogToSIEM({"Module":"Contesthelper", "Function":"Add Submission", "Username":message.author.username, "Content":message.id})
 	return;
 }
 
@@ -103,8 +100,6 @@ async function RemSub(client, message, config)
 	
 		console.log("Removed Submission:" + message.id)
 	}
-
-	GerneralFunctions.LogToSIEM({"Module":"Contesthelper", "Function":"Remove Submission", "Username":message.author.username, "Content":message.id})
 }
 
 async function SubVote(client, message, config)
@@ -113,7 +108,7 @@ async function SubVote(client, message, config)
 	const channel   = guild .channels.cache.get(config.Contest.Channel)
 
 	const roles     = message.guild.roles;
-    const everybody = roles.cache.find(r => r.id === config.Contest.EverRole);
+    const member 	= message.guild.roles.cache.get(config.Contest.MemberRole);
 
 	await channel.send("----- VOTE ABOVE -----")
 	
@@ -131,7 +126,8 @@ async function SubVote(client, message, config)
 	const oldmsg = channel.messages.fetch(data.start)
 	oldmsg.then(msg => channel.send(msg.url))
 
-	await channel.overwritePermissions([{id:everybody, deny:['SEND_MESSAGES'],},], 'Submission Phase')		
+	await channel.permissionOverwrites.edit(member,  { SEND_MESSAGES: false });
+	//await channel.overwritePermissions([{id:everybody, deny:['SEND_MESSAGES'],},], 'Submission Phase')		
 }
 
 function AddVoteReact(client ,message, element, channel, config)
@@ -185,7 +181,7 @@ async function GetResults(message, client, config)
 			fs.appendFile(config.Contest.WinFile, list[cnt][0].count + " Votes:" + list[cnt][1].author.username + "\n", (err) => {if (err) throw err;});
 		}
 
-		await message.channel.send("", { files: [config.Contest.WinFile] })
+		await message.channel.send({files: [config.Contest.WinFile] });
 		await fs.writeFile(config.Contest.WinFile, '', (err) => {if (err) throw err;}) 
 	}
 }
@@ -209,19 +205,18 @@ async function GivePrize(client, message, config)
 			// find memeber statement
 			await guild.members.fetch(users[elem]).then( mem => {
 
-
 				if(mem.roles.cache.has(role[elem]))
 				{
 					var place = parseInt(elem) + 1
-					if(elem != 3){message.channel.send("Member <@!" + users[elem] + "> has already the " + place + " Place role").then(msg => {msg.delete({timeout:5000})})}
-					else{message.channel.send("Member <@!" + users[elem]  + "> has already the Jury Pick Role").then(msg => {msg.delete({timeout:5000})})}
+					if(elem != 3){message.channel.send("Member <@!" + users[elem] + "> has already the " + place + " Place role").then(msg => {setTimeout(() => msg.delete(), 10000)});}
+					else{message.channel.send("Member <@!" + users[elem]  + "> has already the Jury Pick Role").then(msg => {setTimeout(() => msg.delete(), 10000)});}
 				}
 				else
 				{
 					var place = parseInt(elem) + 1
 					mem.roles.add(role[elem])
-					if(elem != 3){message.channel.send("Gave Member <@!" + users[elem] + "> the " + place + " Place role").then(msg => {msg.delete({timeout:5000})})}
-					else{message.channel.send("Gave Member <@!" + users[elem]  + "> the Jury Pick Role").then(msg => {msg.delete({timeout:5000})})}
+					if(elem != 3){message.channel.send("Gave Member <@!" + users[elem] + "> the " + place + " Place role").then(msg => {setTimeout(() => msg.delete(), 10000)});}	
+					else{message.channel.send("Gave Member <@!" + users[elem]  + "> the Jury Pick Role").then(msg => {setTimeout(() => msg.delete(), 10000)});}
 				}
 			}).catch(console.error);
 			
@@ -232,8 +227,6 @@ async function GivePrize(client, message, config)
 		message.channel.send("Invalid input make sure the Syntax is right").then(msg => {msg.delete({timeout:5000})})
 	}
 }
-
-
 
 module.exports.Helper = Helper;
 module.exports.AddSub = AddSub;
