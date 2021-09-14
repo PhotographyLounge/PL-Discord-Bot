@@ -5,6 +5,15 @@ const fs = require('fs');
 const Token = require('./../tokens/PL.json');
 const config = require('./config.json');
 
+//Database
+const admin = require("firebase-admin");
+const serviceAccount = require("path/to/serviceAccountKey.json"); //Don't forget to change this to the actual path.
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
 
 
 //Modules
@@ -17,7 +26,7 @@ const Contest           = require('./Functions/ContestHelper.js');
 try{
 	const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ] });
 	client.login(Token['Token']);
-
+	
 	client.on('ready', message => {
 		try{
 		    GerneralFunctions.Log(config, client, "Server Restart")
@@ -36,6 +45,12 @@ try{
 
 		if      (message.channel.id == config.PhotoReactMod.Photoid){PhotoReactions.addreactions(config, message);}
 		else if (message.channel.id == config.Contest.Channel      ){Contest.AddSub(client, message, config);}
+		else if (message.channel.parent.id == config.Portfolio.Category)
+		{
+			if(message.attachments){
+				message.attachments.forEach(attachment => GeneralFunctions.SaveImage(db, attachment.url, message.member) );
+			}
+		}
 
 		if(message.content.startsWith("!poll"))
 		{
