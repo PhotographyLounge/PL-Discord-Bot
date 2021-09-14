@@ -106,6 +106,20 @@ function SaveImage(db, ImgURL, member) {
 	return;
 }
 
+function SyncPortfolios(db, channel, member) {
+	
+	const ref = db.collection('portfolios').doc(member.id);
+
+	const res = await ref.set({
+	  description: channel.description,
+	  username: member.user.username,
+	  discriminator: member.user.discriminator,
+	  title: channel.title
+	});	
+	
+	return;
+}
+
 module.exports.ImageEmbed = ImageEmbed;
 module.exports.HelpPage = HelpPage;
 module.exports.RoleHelpPage = RoleHelpPage;
