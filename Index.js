@@ -5,7 +5,7 @@ const fs = require('fs');
 const Token = require('./../tokens/PL.json');
 const config = require('./config.json');
 
-//Database
+//database
 const admin = require("firebase-admin");
 const serviceAccount = require("path/to/serviceAccountKey.json"); //Don't forget to change this to the actual path.
 
@@ -48,7 +48,7 @@ try{
 		else if (message.channel.parent.id == config.Portfolio.Category)
 		{
 			if(message.attachments){
-				message.attachments.forEach(attachment => GeneralFunctions.SaveImage(db, attachment.url, message.member) );
+				message.attachments.forEach(attachment => GerneralFunctions.SaveImage(db, attachment.url, message.member) );
 			}
 		}
 
@@ -60,6 +60,22 @@ try{
 				message.delete();
 				GerneralFunctions.PollEmbed(config, message.channel, message.author.displayAvatarURL(), message.author.username, msg);
 			}	
+		}
+		
+		if(message.content.toLowerCase().startsWith("!syncportfolios"))
+		{
+				if(message.author.id == "397142169506414592" || message.author.id == "345276559038611466"){
+					let guild = client.guilds.cache.get(config.Portfolio.Guild);
+					let category = guild.channels.cache.get(config.Portfolio.Category)
+					category.children.forEach(function(pchannel) =>{
+						channel.permissionOverwrites.cache.forEach(function(overwrite) =>{
+							if(overwrite.type === "member"){
+								let member = guild.members.cache.get(overwrite.id)
+								GerneralFunctions.SyncPortfolios(db, pchannel, member)
+							}
+						});
+					});
+				}
 		}
 		
 		if(message.content.includes(config.General.Prefix) && message.content.includes(" "))
