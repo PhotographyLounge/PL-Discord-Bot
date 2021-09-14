@@ -39,6 +39,10 @@
 		"SubFile"   :"SaveFiles/Submissions.json",
 		"WinFile"   :"SaveFiles/Winners.txt"
 	},
+	"Portfolio":{
+		"Category"   :"730785052912386089",
+		"Guild"      :"728905379274162177"
+	},
 	"ReactMod":{
 		"Categories":{
 			"pronouns":{
