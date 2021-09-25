@@ -129,3 +129,4 @@ module.exports.transientResponseEmbed = transientResponseEmbed;
 module.exports.Ping = Ping;
 module.exports.Log = Log;
 module.exports.SaveImage = SaveImage;
+module.exports.SyncPortfolios = SyncPortfolios;
