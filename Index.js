@@ -68,7 +68,7 @@ try{
 					let guild = client.guilds.cache.get(config.Portfolio.Guild);
 					let category = guild.channels.cache.get(config.Portfolio.Category)
 					category.children.forEach(function(pchannel) =>{
-						channel.permissionOverwrites.cache.forEach(function(overwrite) =>{
+						pchannel.permissionOverwrites.cache.forEach(function(overwrite) =>{
 							if(overwrite.type === "member"){
 								let member = guild.members.cache.get(overwrite.id)
 								GerneralFunctions.SyncPortfolios(db, pchannel, member)
@@ -151,6 +151,22 @@ try{
 			RoleReactions.GetRole(config, client, reaction, user)
 		}
 	});
+
+	client.on('channelUpdate', (oldChannel, newChannel) => {
+		let guild = client.guilds.cache.get(config.Portfolio.Guild);
+		let category = guild.channels.cache.get(config.Portfolio.Category)
+		category.children.forEach(function(pchannel) =>{
+			if(pchannel.id == newChannel.id){
+				newChannel.permissionOverwrites.cache.forEach(function(overwrite) =>{
+					if(overwrite.type === "member"){
+						let member = guild.members.cache.get(overwrite.id)
+						GerneralFunctions.SyncPortfolios(db, newChannel, member)
+					}
+				});
+			}
+		});
+	});
+
 
 	client.on("messageDelete", function(message){
 		if(message.channel == config.Contest.Channel)
