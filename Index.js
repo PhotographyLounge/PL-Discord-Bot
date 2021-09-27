@@ -155,8 +155,7 @@ try{
 	client.on('channelUpdate', (oldChannel, newChannel) => {
 		let guild = client.guilds.cache.get(config.Portfolio.Guild);
 		let category = guild.channels.cache.get(config.Portfolio.Category)
-		category.children.forEach(function(pchannel) =>{
-			if(pchannel.id == newChannel.id){
+			if(category.id == newChannel.parentId){
 				newChannel.permissionOverwrites.cache.forEach(function(overwrite) =>{
 					if(overwrite.type === "member"){
 						let member = guild.members.cache.get(overwrite.id)
@@ -164,7 +163,6 @@ try{
 					}
 				});
 			}
-		});
 	});
 
 
