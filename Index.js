@@ -5,6 +5,15 @@ const fs = require('fs');
 const Token = require('./../tokens/PL.json');
 const config = require('./config.json');
 
+//database
+const admin = require("firebase-admin");
+const serviceAccount = require("path/to/serviceAccountKey.json"); //Don't forget to change this to the actual path.
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
 
 
 //Modules
@@ -17,7 +26,7 @@ const Contest           = require('./Functions/ContestHelper.js');
 try{
 	const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ] });
 	client.login(Token['Token']);
-
+	
 	client.on('ready', message => {
 		try{
 		    GerneralFunctions.Log(config, client, "Server Restart")
@@ -36,6 +45,12 @@ try{
 
 		if      (message.channel.id == config.PhotoReactMod.Photoid){PhotoReactions.addreactions(config, message);}
 		else if (message.channel.id == config.Contest.Channel      ){Contest.AddSub(client, message, config);}
+		else if (message.channel.parent.id == config.Portfolio.Category)
+		{
+			if(message.attachments){
+				message.attachments.forEach(attachment => GerneralFunctions.SaveImage(db, attachment.url, message.member) );
+			}
+		}
 
 		if(message.content.startsWith("!poll"))
 		{
@@ -45,6 +60,22 @@ try{
 				message.delete();
 				GerneralFunctions.PollEmbed(config, message.channel, message.author.displayAvatarURL(), message.author.username, msg);
 			}	
+		}
+		
+		if(message.content.toLowerCase().startsWith("!syncportfolios"))
+		{
+				if(message.author.id == "397142169506414592" || message.author.id == "345276559038611466"){
+					let guild = client.guilds.cache.get(config.Portfolio.Guild);
+					let category = guild.channels.cache.get(config.Portfolio.Category)
+					category.children.forEach(function(pchannel) =>{
+						pchannel.permissionOverwrites.cache.forEach(function(overwrite) =>{
+							if(overwrite.type === "member"){
+								let member = guild.members.cache.get(overwrite.id)
+								GerneralFunctions.SyncPortfolios(db, pchannel, member)
+							}
+						});
+					});
+				}
 		}
 		
 		if(message.content.includes(config.General.Prefix) && message.content.includes(" "))
@@ -120,6 +151,20 @@ try{
 			RoleReactions.GetRole(config, client, reaction, user)
 		}
 	});
+
+	client.on('channelUpdate', (oldChannel, newChannel) => {
+		let guild = client.guilds.cache.get(config.Portfolio.Guild);
+		let category = guild.channels.cache.get(config.Portfolio.Category)
+			if(category.id == newChannel.parentId){
+				newChannel.permissionOverwrites.cache.forEach(function(overwrite) =>{
+					if(overwrite.type === "member"){
+						let member = guild.members.cache.get(overwrite.id)
+						GerneralFunctions.SyncPortfolios(db, newChannel, member)
+					}
+				});
+			}
+	});
+
 
 	client.on("messageDelete", function(message){
 		if(message.channel == config.Contest.Channel)

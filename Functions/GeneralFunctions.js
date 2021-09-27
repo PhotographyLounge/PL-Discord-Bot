@@ -98,6 +98,28 @@ function Log(config, client, message){
 	channel.send(message)
 }
 
+function SaveImage(db, ImgURL, member) {
+	
+	const ref = db.collection('portfolios').doc(member.id).collection('images');
+	const res = await ref.set({ url : ImgURL});
+				   
+	return;
+}
+
+function SyncPortfolios(db, channel, member) {
+	
+	const ref = db.collection('portfolios').doc(member.id);
+
+	const res = await ref.set({
+	  description: channel.description,
+	  username: member.user.username,
+	  discriminator: member.user.discriminator,
+	  title: channel.title
+	});	
+	
+	return;
+}
+
 module.exports.ImageEmbed = ImageEmbed;
 module.exports.HelpPage = HelpPage;
 module.exports.RoleHelpPage = RoleHelpPage;
@@ -106,3 +128,5 @@ module.exports.PollEmbed = PollEmbed;
 module.exports.transientResponseEmbed = transientResponseEmbed;
 module.exports.Ping = Ping;
 module.exports.Log = Log;
+module.exports.SaveImage = SaveImage;
+module.exports.SyncPortfolios = SyncPortfolios;
